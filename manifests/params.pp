@@ -14,9 +14,9 @@ class git::params inherits git::default {
 
   #---
 
-  $prefix_template         = module_param('prefix_template', 'Wrapper')
+  $prefix_template = module_param('prefix_template', 'Wrapper')
 
-  $hook_file_mode          = module_param('hook_file_mode', '0755')
+  $hook_file_mode = module_param('hook_file_mode', '0755')
 
   #---
 
