@@ -1,85 +1,80 @@
 
-define git::repo (
+define git::repo(
 
   $repo_name            = $name,
   $user                 = $git::params::user,
   $group                = $git::params::group,
-  $home                 = $git::params::home,
-  $source               = $git::params::source,
+  $home_dir             = $git::params::home_dir,
+  $source               = undef,
   $revision             = $git::params::revision,
   $base                 = $git::params::base,
   $post_update_commands = $git::params::post_update_commands,
   $post_update_template = $git::params::post_update_template,
-  $update_notify        = undef,
+  $update_notify        = undef
 
 ) {
+  $base_name       = $git::params::base_name
+  $definition_name = "${base_name}_repo_${repo_name}"
 
-  $repo_dir             = $home ? {
-    ''                   => $repo_name,
-    default              => "${home}/${repo_name}",
-  }
-
-  $repo_git_dir         = $base ? {
-    'true'               => $repo_dir,
-    default              => "${repo_dir}/.git"
-  }
-
-  include git
+  $repo_dir        = ensure($home_dir, "${home_dir}/${repo_name}", $repo_name)
+  $repo_git_dir    = ensure($base, $repo_dir, "${repo_dir}/.git")
 
   #--
 
-  Exec {
-    path => [ '/bin', '/usr/bin', '/usr/local/bin' ],
-    cwd  => $repo_dir,
-    user => $user,
-  }
-
-  #-----------------------------------------------------------------------------
-
-  if $source and $revision {
-    $revision_real = $revision
-  }
-  else {
-    $revision_real = undef
-  }
-
-  vcsrepo { $repo_dir:
-    ensure   => $base ? {
-      'true'  => 'base',
-      default => $source ? {
-        ''      => 'present',
-        default => 'latest',
-      },
+  coral::vcsrepo { $definition_name:
+    resources => {
+      repo => {
+        path     => $repo_dir,
+        ensure   => ensure($base, 'base', ensure($source, 'latest', 'present')),
+        source   => $source,
+        revision => ensure($source and $revision, $revision, undef)
+      }
     },
-    provider => 'git',
-    owner    => $user,
-    group    => $group,
-    force    => true,
-    source   => $source ? {
-      ''      => undef,
-      default => $source,
+    defaults => {
+      provider => 'git',
+      owner    => $user,
+      group    => $group,
+      force    => true,
+      notify   => $update_notify
     },
-    revision => $revision_real,
-    require  => Class['git'],
-    notify   => $update_notify,
+    require  => Coral::File[$base_name]
   }
 
-  #-----------------------------------------------------------------------------
+  #---
 
-  if $home and $base == 'false' {
-    exec { "${repo_dir}-receive-deny-current-branch":
-      command     => "git config receive.denyCurrentBranch 'ignore'",
-      refreshonly => true,
-      subscribe   => Vcsrepo[$repo_dir],
+  coral::exec { $definition_name:
+    resources => {
+      receive_denyCurrentBranch => {
+        command     => ensure($home_dir and ! $base, "git config receive.denyCurrentBranch ignore"),
+        refreshonly => true
+      }
+    },
+    defaults => {
+      cwd       => $repo_dir,
+      user      => $user,
+      subscribe => Vcsrepo["${definition_name}_repo"]
     }
   }
 
-  file { "${repo_dir}-post-update":
-    path      => "${repo_git_dir}/hooks/post-update",
-    owner     => $user,
-    group     => $group,
-    mode      => 0755,
-    content   => template($post_update_template),
-    subscribe => Vcsrepo[$repo_dir],
+  #---
+
+  coral::file { "${definition_name}_hooks":
+    resources => {
+      post_update => {
+        path    => 'post-update',
+        content => template($post_update_template)
+      }
+    },
+    defaults => {
+      owner         => $user,
+      group         => $group,
+      mode          => $git::params::hook_file_mode,
+      path_template => $git::params::prefix_template
+    },
+    options => {
+      normalize_path  => false,
+      template_prefix => "${repo_git_dir}/hooks/"
+    },
+    require => Coral::Exec[$definition_name]
   }
 }

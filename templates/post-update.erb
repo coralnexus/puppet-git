@@ -128,14 +128,14 @@ then
 		if [ ! "$active_branch" -o "$ref" = "$active_branch" ]
 		then
 			( 
-                update_repository $ref
+        update_repository $ref
                 
 <% post_update_commands.each do |command| -%>
-                <%= command %>
+        <%= command %>
 <% end -%>
                 
-                push_repository
-            )
+        push_repository
+      )
 		fi
 	done
 fi

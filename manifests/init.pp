@@ -2,7 +2,7 @@
 #
 #   This module manages Git components.
 #
-#   Adrian Webb <adrian.webb@coraltech.net>
+#   Adrian Webb <adrian.webb@coralnexus.com>
 #   2012-05-22
 #
 #   Tested platforms:
@@ -18,87 +18,80 @@
 #
 # Sample Usage:
 #
-#   class { 'git':
-#     home             => '/var/git',
-#     allowed_ssh_key' => '<YOUR PUBLIC SSH KEY>',
-#     root_email       => '<YOUR ROOT EMAIL ADDRESS>',
-#     skel_email       => '<YOUR DEFAULT USER EMAIL ADDRESS>'
-#   }
+#   include git
 #
-# [Remember: No empty lines between comments and class definition]
-class git (
+class git inherits git::params {
 
-  $package                 = $git::params::package,
-  $ensure                  = $git::params::ensure,
-  $home                    = $git::params::home,
-  $allowed_ssh_key         = $git::params::allowed_ssh_key,
-  $allowed_ssh_key_type    = $git::params::allowed_ssh_key_type,
-  $public_ssh_key          = $git::params::public_ssh_key,
-  $private_ssh_key         = $git::params::private_ssh_key,
-  $ssh_key_type            = $git::params::ssh_key_type,
-  $password                = $git::params::password,
-  $user                    = $git::params::user,
-  $gid                     = $git::params::gid,
-  $group                   = $git::params::group,
-  $alt_groups              = $git::params::alt_groups,
-  $root_gitconfig_template = $git::params::root_gitconfig_template,
-  $root_name               = $git::params::root_name,
-  $root_email              = $git::params::root_email,
-  $root_home               = $users::params::root_home,
-  $skel_gitconfig_template = $git::params::skel_gitconfig_template,
-  $skel_name               = $git::params::skel_name,
-  $skel_email              = $git::params::skel_email,
-  $skel_home               = $users::params::skel_home,
-
-) inherits git::params {
+  $base_name = $git::params::base_name
 
   #-----------------------------------------------------------------------------
   # Installation
 
-  if ! ( $package and $ensure ) {
-    fail('Git package name and ensure value must be defined')
-  }
-  package { 'git':
-    name   => $package,
-    ensure => $ensure,
+  coral::package { $base_name:
+    resources => {
+      build_packages  => {
+        name => $git::params::build_package_names
+      },
+      common_packages => {
+        name    => $git::params::common_package_names,
+        require => 'build_packages'
+      },
+      extra_packages  => {
+        name    => $git::params::extra_package_names,
+        require => 'common_packages'
+      }
+    },
+    defaults  => {
+      ensure => $git::params::package_ensure
+    }
   }
 
   #-----------------------------------------------------------------------------
   # Configuration
 
-  if $root_home {
-    file { 'root-gitconfig':
-      path    => "${root_home}/.gitconfig",
-      content => template($root_gitconfig_template),
-      require => Package['git'],
-    }
+  coral::file { $base_name:
+    resources => {
+      root_gitconfig => {
+        path    => $git::params::root_config_file,
+        content => $git::params::root_config
+      },
+      skel_gitconfig => {
+        path    => $git::params::skel_config_file,
+        content => $git::params::skel_config
+      },
+      git_gitconfig => {
+        path    => ensure($git::params::user, $git::params::git_config_file),
+        content => $git::params::git_config,
+        require => Users::User[$git::params::user]
+      }
+    },
+    defaults => { content_template => $git::params::config_template }
   }
 
-  if $skel_home {
-    file { 'skel-gitconfig':
-      path    => "${skel_home}/.gitconfig",
-      content => template($skel_gitconfig_template),
-      require => Package['git'],
-    }
-  }
+  #-----------------------------------------------------------------------------
+  # Actions
+
+  coral::exec { $base_name: }
 
   #-----------------------------------------------------------------------------
   # User
 
-  if $user and $home {
-    users::user { $user:
-      gid                  => $gid,
-      group                => $group,
-      alt_groups           => $alt_groups,
-      home                 => $home,
-      allowed_ssh_key      => $allowed_ssh_key,
-      allowed_ssh_key_type => $allowed_ssh_key_type,
-      public_ssh_key       => $public_ssh_key,
-      private_ssh_key      => $private_ssh_key,
-      ssh_key_type         => $ssh_key_type,
-      password             => $password,
-      system               => 'true',
-      require              => [ Package['git'], File['skel-gitconfig'] ],
+  if $git::params::user {
+    users::user { $git::params::user:
+      system               => true,
+      label                => $git::params::git_label,
+      email                => $git::params::git_email,
+      gid                  => $git::params::gid,
+      group                => $git::params::group,
+      alt_groups           => $git::params::alt_groups,
+      password             => $git::params::password,
+      home_dir             => $git::params::home_dir,
+      allowed_ssh_key      => $git::params::allowed_ssh_key,
+      allowed_ssh_key_type => $git::params::allowed_ssh_key_type,
+      ssh_key_type         => $git::params::ssh_key_type,
+      public_ssh_key       => $git::params::public_ssh_key,
+      private_ssh_key      => $git::params::private_ssh_key,
+      require              => Coral::Package[$base_name],
     }
   }
 }
