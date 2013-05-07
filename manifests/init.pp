@@ -94,4 +94,9 @@ class git inherits git::params {
       require              => Coral::Package[$base_name],
     }
   }
+
+  #-----------------------------------------------------------------------------
+  # Resources
+
+  coral_resources('git::repo', "${base_name}::repo", "${base_name}::repo_defaults")
 }
