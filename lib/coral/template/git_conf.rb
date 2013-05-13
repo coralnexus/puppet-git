@@ -42,7 +42,7 @@ class GitConf < Base
   #---
   
   def render_value(value)
-    if Coral::Data.true?(value) || Coral::Data.false?(value) || 
+    if Coral::Util::Data.true?(value) || Coral::Util::Data.false?(value) || 
       ! value.is_a?(String) || value.match(/^\-?[\d\.]+$/)
       return value
     else
