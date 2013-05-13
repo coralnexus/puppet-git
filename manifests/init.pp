@@ -62,7 +62,7 @@ class git inherits git::params {
       git_gitconfig => {
         path    => ensure($git::params::user, $git::params::git_config_file),
         content => $git::params::git_config,
-        require => Users::User[$git::params::user]
+        require => Users::Conf[$git::params::user]
       }
     },
     defaults => { content_template => $git::params::config_template }

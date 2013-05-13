@@ -7,6 +7,14 @@ class git::params inherits git::default {
 
   #---
 
+  $user       = module_param('user', 'git')
+  $gid        = module_param('gid', 785)
+  $group      = module_param('group', 'git')
+  $alt_groups = module_array('alt_groups')
+  $home_dir   = module_param('home_dir', '/var/git')
+
+  #---
+
   $build_package_names  = module_array('build_package_names')
   $common_package_names = module_array('common_package_names')
   $extra_package_names  = module_array('extra_package_names')
@@ -52,14 +60,6 @@ class git::params inherits git::default {
       denyCurrentBranch => $deny_current_branch
     }
   })
-
-  #---
-
-  $user                    = module_param('user', 'git')
-  $gid                     = module_param('gid', 785)
-  $group                   = module_param('group', 'git')
-  $alt_groups              = module_array('alt_groups')
-  $home_dir                = module_param('home_dir', '/var/git')
 
   $allowed_ssh_key         = module_param('allowed_ssh_key')
   $allowed_ssh_key_type    = module_param('allowed_ssh_key_type', $users::params::default_ssh_key_type)

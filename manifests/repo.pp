@@ -1,7 +1,7 @@
 
 define git::repo(
 
-  $repo_name            = $name,
+  $path                 = $name,
   $user                 = $git::params::user,
   $group                = $git::params::group,
   $home_dir             = $git::params::home_dir,
@@ -14,9 +14,9 @@ define git::repo(
 
 ) {
   $base_name       = $git::params::base_name
-  $definition_name = "${base_name}_repo_${repo_name}"
+  $definition_name = name("${base_name}_repo_${name}")
 
-  $repo_dir        = ensure($home_dir, "${home_dir}/${repo_name}", $repo_name)
+  $repo_dir        = ensure($home_dir, "${home_dir}/${path}", $path)
   $repo_git_dir    = ensure($base, $repo_dir, "${repo_dir}/.git")
 
   #--
@@ -26,8 +26,8 @@ define git::repo(
       repo => {
         path     => $repo_dir,
         ensure   => ensure($base, 'base', ensure($source, 'latest', 'present')),
-        source   => $source,
-        revision => ensure($source and $revision, $revision, undef)
+        source   => ensure($source),
+        revision => ensure($source and $revision, $revision)
       }
     },
     defaults => {
