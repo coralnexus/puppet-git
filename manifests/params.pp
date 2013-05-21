@@ -66,6 +66,7 @@ class git::params inherits git::default {
   $public_ssh_key          = module_param('public_ssh_key')
   $private_ssh_key         = module_param('private_ssh_key')
   $ssh_key_type            = module_param('ssh_key_type', $users::params::default_ssh_key_type)
+  $known_hosts             = module_array('known_hosts')
   $password                = module_param('password')
 
   #---

@@ -91,6 +91,7 @@ class git inherits git::params {
       ssh_key_type         => $git::params::ssh_key_type,
       public_ssh_key       => $git::params::public_ssh_key,
       private_ssh_key      => $git::params::private_ssh_key,
+      known_hosts          => $git::params::known_hosts,
       require              => Coral::Package[$base_name],
     }
   }
