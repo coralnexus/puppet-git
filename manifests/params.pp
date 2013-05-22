@@ -73,6 +73,8 @@ class git::params inherits git::default {
 
   $revision                = module_param('revision', 'master')
   $base                    = module_param('base', false)
+  
+  $monitor_file_mode       = module_param('monitor_file_mode', false)
 
   $post_update_template    = module_param('post_update_template', 'git/post-update.erb')
   $post_update_commands    = module_array('post_update_commands')

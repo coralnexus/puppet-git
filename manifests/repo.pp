@@ -8,6 +8,7 @@ define git::repo(
   $source               = undef,
   $revision             = $git::params::revision,
   $base                 = $git::params::base,
+  $monitor_file_mode    = $git::params::monitor_file_mode,
   $post_update_commands = $git::params::post_update_commands,
   $post_update_template = $git::params::post_update_template,
   $update_notify        = undef
@@ -45,14 +46,17 @@ define git::repo(
   coral::exec { $definition_name:
     resources => {
       receive_denyCurrentBranch => {
-        command     => ensure($home_dir and ! $base, "git config receive.denyCurrentBranch ignore"),
-        refreshonly => true
+        command     => ensure($home_dir and ! $base, "git config receive.denyCurrentBranch ignore")
+      },
+      core_filemode => {
+        command => "git config core.filemode ${monitor_file_mode}"
       }
     },
     defaults => {
-      cwd       => $repo_dir,
-      user      => $user,
-      subscribe => Vcsrepo["${definition_name}_repo"]
+      cwd         => $repo_dir,
+      user        => $user,
+      refreshonly => true,
+      subscribe   => Vcsrepo["${definition_name}_repo"]
     }
   }
 
