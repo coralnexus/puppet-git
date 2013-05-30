@@ -130,7 +130,7 @@ then
 			( 
         update_repository $ref
                 
-<% post_update_commands.each do |command| -%>
+<% @post_update_commands.each do |command| -%>
         <%= command %>
 <% end -%>
                 
