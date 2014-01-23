@@ -1,7 +1,7 @@
 
 module Coral
 module Template
-class GitConf < Plugin::Template
+class Gitconfig < Plugin::Template
   
   #-----------------------------------------------------------------------------
   # Renderers  

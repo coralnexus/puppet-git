@@ -22,13 +22,13 @@ class git::params inherits git::default {
 
   #---
 
-  $prefix_template = module_param('prefix_template', 'Wrapper')
+  $prefix_template = module_param('prefix_template', 'wrapper')
 
   $hook_file_mode = module_param('hook_file_mode', '0755')
 
   #---
 
-  $config_template = module_param('config_template', 'GitConf')
+  $config_template = module_param('config_template', 'gitconfig')
   $config_file     = module_param('config_file', '.gitconfig')
 
   $root_config_file = module_param('root_config_file', "${users::params::root_home_dir}/${config_file}")
@@ -73,7 +73,7 @@ class git::params inherits git::default {
 
   $revision                = module_param('revision', 'master')
   $base                    = module_param('base', false)
-  
+
   $monitor_file_mode       = module_param('monitor_file_mode', false)
 
   $post_update_template    = module_param('post_update_template', 'git/post-update.erb')
