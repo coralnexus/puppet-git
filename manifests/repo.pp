@@ -22,7 +22,7 @@ define git::repo(
 
   #--
 
-  coral::vcsrepo { $definition_name:
+  corl::vcsrepo { $definition_name:
     resources => {
       repo => {
         path     => $repo_dir,
@@ -38,12 +38,12 @@ define git::repo(
       force    => true,
       notify   => $update_notify
     },
-    require  => Coral::File[$base_name]
+    require  => Corl::File[$base_name]
   }
 
   #---
 
-  coral::exec { $definition_name:
+  corl::exec { $definition_name:
     resources => {
       receive_denyCurrentBranch => {
         command     => ensure($home_dir and ! $base, "git config receive.denyCurrentBranch ignore")
@@ -62,7 +62,7 @@ define git::repo(
 
   #---
 
-  coral::file { "${definition_name}_hooks":
+  corl::file { "${definition_name}_hooks":
     resources => {
       post_update => {
         path    => 'post-update',
@@ -79,6 +79,6 @@ define git::repo(
       normalize_path  => false,
       template_prefix => "${repo_git_dir}/hooks/"
     },
-    require => Coral::Exec[$definition_name]
+    require => Corl::Exec[$definition_name]
   }
 }

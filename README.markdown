@@ -1,5 +1,5 @@
-## coralnexus-git module
+# coralnexus-git module
 
-## Overview
+# Overview
 
 This module installs, configures, and manages Git.

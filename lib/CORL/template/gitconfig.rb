@@ -1,7 +1,7 @@
 
-module Coral
+module CORL
 module Template
-class Gitconfig < Plugin::Template
+class Gitconfig < CORL.plugin_class(:template)
   
   #-----------------------------------------------------------------------------
   # Renderers  

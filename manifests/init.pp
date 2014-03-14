@@ -27,7 +27,7 @@ class git inherits git::params {
   #-----------------------------------------------------------------------------
   # Installation
 
-  coral::package { $base_name:
+  corl::package { $base_name:
     resources => {
       build_packages  => {
         name => $git::params::build_package_names
@@ -49,7 +49,7 @@ class git inherits git::params {
   #-----------------------------------------------------------------------------
   # Configuration
 
-  coral::file { $base_name:
+  corl::file { $base_name:
     resources => {
       root_gitconfig => {
         path    => $git::params::root_config_file,
@@ -71,7 +71,7 @@ class git inherits git::params {
   #-----------------------------------------------------------------------------
   # Actions
 
-  coral::exec { $base_name: }
+  corl::exec { $base_name: }
 
   #-----------------------------------------------------------------------------
   # User
@@ -92,12 +92,12 @@ class git inherits git::params {
       public_ssh_key       => $git::params::public_ssh_key,
       private_ssh_key      => $git::params::private_ssh_key,
       known_hosts          => $git::params::known_hosts,
-      require              => Coral::Package[$base_name],
+      require              => Corl::Package[$base_name],
     }
   }
 
   #-----------------------------------------------------------------------------
   # Resources
 
-  coral_resources('git::repo', "${base_name}::repo", "${base_name}::repo_defaults")
+  corl_resources('git::repo', "${base_name}::repo", "${base_name}::repo_defaults")
 }

@@ -1,5 +1,5 @@
 
-class git::params inherits git::default {
+class git::params {
 
   $base_name = 'git'
 
