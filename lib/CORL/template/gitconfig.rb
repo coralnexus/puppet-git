@@ -43,7 +43,7 @@ class Gitconfig < CORL.plugin_class(:template)
   #---
   
   def render_value(value)
-    if Coral::Util::Data.true?(value) || Coral::Util::Data.false?(value) || 
+    if Util::Data.true?(value) || Util::Data.false?(value) || 
       ! value.is_a?(String) || value.match(/^\-?[\d\.]+$/)
       return value
     else
