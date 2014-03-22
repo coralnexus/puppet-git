@@ -3,6 +3,7 @@ define git::repo(
 
   $path                 = $name,
   $user                 = $git::params::user,
+  $owner                = $git::params::owner,
   $group                = $git::params::group,
   $home_dir             = $git::params::home_dir,
   $source               = undef,
@@ -33,7 +34,8 @@ define git::repo(
     },
     defaults => {
       provider => 'git',
-      owner    => $user,
+      user     => $user,
+      owner    => $owner,
       group    => $group,
       force    => true,
       notify   => $update_notify

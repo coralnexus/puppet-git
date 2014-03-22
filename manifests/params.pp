@@ -8,6 +8,7 @@ class git::params inherits git::default {
   #---
 
   $user       = module_param('user', 'git')
+  $owner      = module_param('owner', 'git')
   $gid        = module_param('gid', 785)
   $group      = module_param('group', 'git')
   $alt_groups = module_array('alt_groups')
