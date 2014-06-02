@@ -1,7 +1,7 @@
 
-module CORL
+module Nucleon
 module Template
-class Gitconfig < CORL.plugin_class(:template)
+class Gitconfig < CORL.plugin_class(:nucleon, :template)
   
   #-----------------------------------------------------------------------------
   # Renderers  
