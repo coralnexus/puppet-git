@@ -37,7 +37,7 @@ define git::repo(
       user     => $user,
       owner    => $owner,
       group    => $group,
-      force    => true,
+      force    => false,
       notify   => $update_notify
     },
     require  => Corl::File[$base_name]
